@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import { useEffect, useState } from 'react';
+import { fetchWeather } from './api/fetchWeather';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
+  const [data, setData] = useState({})
+  useEffect(() => {
+    window.addEventListener('online', () => {
+      toast("Online now, hoooo!")
+    })
+    window.addEventListener('offline', () => {
+      toast("Problem about your network, we will working in offline mode")
+    })
+    if (!window.navigator.onLine) {
+      toast("Problem about your network, we will working in offline mode")
+    }
+    async function fetchData() {
+      const data = await fetchWeather()
+      setData(data)
+    }
+    fetchData()
+  }, [])
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {data?.results?.map(item => (
+        <div key={item.name}>
+          <img style={{ height: 300, width: 300 }} alt="pokemon" src={`https://img.pokemondb.net/artwork/large/${item.name}.jpg`} />
+          <p>{item.name}</p>
+        </div>
+      ))}
+      <ToastContainer />
     </div>
   );
 }
